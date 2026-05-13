@@ -1,0 +1,30 @@
+<?php
+
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BeriPinjamanController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\HutangController;
+use App\Http\Controllers\Api\IncomeController;
+use App\Http\Controllers\Api\OutcomeController;
+use App\Http\Controllers\Api\WalletController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+
+Route::post('/register', [AuthController::class,'register']);
+Route::post('/login', [AuthController::class,'login']);
+Route::post('/logout', [AuthController::class,'logout']);
+
+Route::post('/wallet', [WalletController::class,'createWallet'])->middleware('auth:sanctum');
+Route::get('/category-income', [CategoryController::class,'indexIncome']);
+Route::get('/category-outcome', [CategoryController::class,'indexOutcome']);
+Route::post('/income',[IncomeController::class,'createIncome'])->middleware('auth:sanctum');
+Route::post('/outcome',[OutcomeController::class,'createOutcome'])->middleware('auth:sanctum');
+Route::post('/hutang',[HutangController::class, 'createHutang'])->middleware('auth:sanctum');
+Route::put('/hutang/{id}',[HutangController::class, 'updateStatusHutang'])->middleware('auth:sanctum');
+Route::post('/beri-pinjaman',[BeriPinjamanController::class, 'createBeriPinjaman'])->middleware('auth:sanctum');
+Route::put('/beri-pinjaman/{id}', [BeriPinjamanController::class, 'updateStatusBeriPinjaman'])->middleware('auth:sanctum');
+
