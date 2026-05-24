@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Google\Client;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -70,4 +72,53 @@ class AuthController extends Controller
             'user' => $user,
         ], 200);
     }
+
+
+    // function buat login dengan google
+   public function googleLogin(Request $request)
+{
+    $request->validate([
+        'id_token' => 'required'
+    ]);
+
+    $client = new Client([
+        'client_id' => env('GOOGLE_CLIENT_ID')
+    ]);
+
+    try {
+
+        $payload = $client->verifyIdToken($request->id_token);
+
+        if (!$payload) {
+            return response()->json([
+                'message' => 'Invalid Google token'
+            ], 401);
+        }
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'message' => 'Invalid Google token'
+        ], 401);
+
+    }
+
+    $user = User::firstOrCreate(
+        [
+            'email' => $payload['email']
+        ],
+        [
+            'name' => $payload['name'],
+            'password' => bcrypt(Str::random(16))
+        ]
+    );
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Login success',
+        'token' => $token,
+        'user' => $user
+    ], 200);
+}
 }

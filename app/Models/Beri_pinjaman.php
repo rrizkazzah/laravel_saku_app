@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Beri_pinjaman extends Model
 {
+    // pake protected $table krn takut laravel salah tebak
     protected $table = 'beri_pinjaman';
     protected $fillable =
     [
