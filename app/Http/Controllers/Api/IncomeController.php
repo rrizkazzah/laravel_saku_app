@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Income;
+use App\Models\Nominal_wallet;
 use Illuminate\Http\Request;
 
 class IncomeController extends Controller
@@ -26,6 +27,13 @@ class IncomeController extends Controller
         'notes' => $request->notes,
         'nominal' => $request->nominal,
     ]);
+
+    $saldo = Nominal_wallet::where(
+    'wallet_id',
+    $request->wallet_id
+    )->first();
+
+$saldo->increment('nominal', $request->nominal);
 
     return response()->json([
         'status' => 'success',

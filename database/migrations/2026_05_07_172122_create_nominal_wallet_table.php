@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('nominal_categories', function (Blueprint $table) {
+        Schema::create('nominal_wallet', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('wallet_id')->constrained('wallet')->onDelete('cascade');
             $table->decimal('nominal');
             $table->timestamps();
         });
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('nominal_categories');
+        Schema::dropIfExists('nominal_wallet');
     }
 };
