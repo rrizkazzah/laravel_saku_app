@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Hutang;
+use App\Models\Nominal_wallet;
 use Illuminate\Http\Request;
 
 class HutangController extends Controller
@@ -36,22 +37,38 @@ class HutangController extends Controller
     }
 
     public function updateStatusHutang(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:paid,unpaid',
-        ]);
+{
+    $request->validate([
+        'status' => 'required|in:paid,unpaid',
+    ]);
 
-        $hutang = Hutang::where('user_id', $request->user()->id)
-            ->findOrFail($id);
+    $hutang = Hutang::where('user_id', $request->user()->id)
+        ->findOrFail($id);
 
-        $hutang->update([
-            'status' => $request->status,
-        ]);
+    // jika sebelumnya unpaid lalu menjadi paid
+    if (
+        $hutang->status === 'unpaid' &&
+        $request->status === 'paid'
+    ) {
+        $saldo = Nominal_wallet::where(
+            'wallet_id',
+            $hutang->wallet_id
+        )->first();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Status hutang berhasil diupdate',
-            'data' => $hutang,
-        ]);
+        $saldo->decrement(
+            'nominal',
+            $hutang->nominal
+        );
     }
+
+    $hutang->update([
+        'status' => $request->status,
+    ]);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Status hutang berhasil diupdate',
+        'data' => $hutang,
+    ]);
+}
 }

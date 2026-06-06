@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Beri_pinjaman;
+use App\Models\Nominal_wallet;
 use Illuminate\Http\Request;
 
 class BeriPinjamanController extends Controller
@@ -36,22 +37,40 @@ class BeriPinjamanController extends Controller
     }
 
     public function updateStatusBeriPinjaman(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:paid,unpaid',
-        ]);
+{
+    $request->validate([
+        'status' => 'required|in:paid,unpaid',
+    ]);
 
-        $beriPinjaman = Beri_pinjaman::where('user_id', $request->user()->id)
-            ->findOrFail($id);
+    $beriPinjaman = Beri_pinjaman::where(
+        'user_id',
+        $request->user()->id
+    )->findOrFail($id);
 
-        $beriPinjaman->update([
-            'status' => $request->status,
-        ]);
+    // jika sebelumnya unpaid lalu menjadi paid
+    if (
+        $beriPinjaman->status === 'unpaid' &&
+        $request->status === 'paid'
+    ) {
+        $saldo = Nominal_wallet::where(
+            'wallet_id',
+            $beriPinjaman->wallet_id
+        )->first();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Status hutang berhasil diupdate',
-            'data' => $beriPinjaman,
-        ]);
+        $saldo->increment(
+            'nominal',
+            $beriPinjaman->nominal
+        );
     }
+
+    $beriPinjaman->update([
+        'status' => $request->status,
+    ]);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Status pinjaman berhasil diupdate',
+        'data' => $beriPinjaman,
+    ]);
+}
 }
