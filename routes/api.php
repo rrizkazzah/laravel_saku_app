@@ -24,8 +24,12 @@ Route::get('/category-income', [CategoryController::class,'indexIncome']);
 Route::get('/category-outcome', [CategoryController::class,'indexOutcome']);
 Route::post('/income',[IncomeController::class,'createIncome'])->middleware('auth:sanctum');
 Route::post('/outcome',[OutcomeController::class,'createOutcome'])->middleware('auth:sanctum');
+Route::get('/income', [IncomeController::class, 'getIncome'])->middleware('auth:sanctum');
+Route::get('/outcome', [OutcomeController::class, 'getOutcome'])->middleware('auth:sanctum');
 Route::post('/hutang',[HutangController::class, 'createHutang'])->middleware('auth:sanctum');
 Route::put('/hutang/{id}',[HutangController::class, 'updateStatusHutang'])->middleware('auth:sanctum');
+Route::get('/hutang', [HutangController::class, 'getHutang'])->middleware('auth:sanctum');
 Route::post('/beri-pinjaman',[BeriPinjamanController::class, 'createBeriPinjaman'])->middleware('auth:sanctum');
 Route::put('/beri-pinjaman/{id}', [BeriPinjamanController::class, 'updateStatusBeriPinjaman'])->middleware('auth:sanctum');
+Route::get('/beri-pinjaman',[BeriPinjamanController::class, 'getBeriPinjaman'])->middleware('auth:sanctum');
 

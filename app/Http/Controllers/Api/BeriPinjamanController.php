@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Beri_pinjaman;
 use App\Models\Nominal_wallet;
+use App\Models\Deadline_pinjaman;
 use Illuminate\Http\Request;
 
 class BeriPinjamanController extends Controller
@@ -17,6 +18,7 @@ class BeriPinjamanController extends Controller
             'nama' => 'required',
             'notes' => 'nullable',
             'nominal' => 'required|numeric',
+            'deadline' => 'required|date',
         ]);
 
         $beriPinjaman = Beri_pinjaman::create([
@@ -27,6 +29,11 @@ class BeriPinjamanController extends Controller
             'notes' => $request->notes,
             'nominal' => $request->nominal,
             'status' => 'unpaid',
+        ]);
+
+        Deadline_pinjaman::create([
+            'beri_pinjaman_id' => $beriPinjaman->id,
+            'deadline' => $request->deadline,
         ]);
 
         return response()->json([
@@ -73,4 +80,16 @@ class BeriPinjamanController extends Controller
         'data' => $beriPinjaman,
     ]);
 }
+
+    public function getBeriPinjaman(Request $request)
+    {
+        $beriPinjaman = Beri_pinjaman::with('deadline')
+            ->where('user_id', $request->user()->id)
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $beriPinjaman,
+        ]);
+    }
 }

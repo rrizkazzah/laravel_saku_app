@@ -41,4 +41,17 @@ $saldo->increment('nominal', $request->nominal);
         'data' => $income,
     ], 201);
 }
+
+public function getIncome(Request $request)
+{
+    $income = Income::where(
+        'user_id',
+        $request->user()->id
+    )->get();
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $income,
+    ]);
+}
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Deadline_hutang;
 use App\Models\Hutang;
 use App\Models\Nominal_wallet;
 use Illuminate\Http\Request;
@@ -17,6 +18,7 @@ class HutangController extends Controller
             'nama' => 'required',
             'notes' => 'nullable',
             'nominal' => 'required|numeric',
+            'deadline' => 'required|date',
         ]);
 
         $hutang = Hutang::create([
@@ -27,6 +29,11 @@ class HutangController extends Controller
             'notes' => $request->notes,
             'nominal' => $request->nominal,
             'status' => 'unpaid',
+        ]);
+
+        Deadline_hutang::create([
+            'hutang_id' => $hutang->id,
+            'deadline' => $request->deadline,
         ]);
 
         return response()->json([
@@ -68,6 +75,18 @@ class HutangController extends Controller
     return response()->json([
         'status' => 'success',
         'message' => 'Status hutang berhasil diupdate',
+        'data' => $hutang,
+    ]);
+}
+
+    public function getHutang(Request $request)
+{
+    $hutang = Hutang::with('deadline')
+        ->where('user_id', $request->user()->id)
+        ->get();
+
+    return response()->json([
+        'status' => 'success',
         'data' => $hutang,
     ]);
 }

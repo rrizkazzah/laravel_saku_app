@@ -55,4 +55,17 @@ class OutcomeController extends Controller
             'data' => $outcome,
         ], 201);
     }
+
+    public function getOutcome(Request $request)
+{
+    $outcome = Outcome::where(
+        'user_id',
+        $request->user()->id
+    )->get();
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $outcome,
+    ]);
+}
 }

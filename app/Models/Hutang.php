@@ -27,4 +27,9 @@ class Hutang extends Model
     {
         return $this->belongsTo(Wallet::class);
     }
+
+    public function deadline()
+    {
+        return $this->hasOne(Deadline_hutang::class);
+    }
 }

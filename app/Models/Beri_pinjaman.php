@@ -29,4 +29,12 @@ class Beri_pinjaman extends Model
     {
         return $this->belongsTo(Wallet::class);
     }
+
+    public function deadline()
+    {
+        return $this->hasOne(
+            Deadline_pinjaman::class,
+            'beri_pinjaman_id'
+        );
+    }
 }
